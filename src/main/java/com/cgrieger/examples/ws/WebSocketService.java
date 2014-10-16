@@ -4,6 +4,9 @@ import com.cgrieger.examples.core.Service;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import io.undertow.Undertow;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.ClassIntrospecter;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -16,6 +19,7 @@ import javax.servlet.ServletException;
 import java.util.logging.Logger;
 
 import static io.undertow.Handlers.path;
+import static io.undertow.Handlers.resource;
 import static io.undertow.servlet.Servlets.deployment;
 import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.ATTRIBUTE_NAME;
 
@@ -48,7 +52,12 @@ public class WebSocketService implements Service<WebSocketService> {
     try {
       server = Undertow.builder()
           .addHttpListener(8081, "localhost")
-          .setHandler(path().addPrefixPath("/ws", manager.start()))
+          .setHandler(path()
+              .addPrefixPath("/ws", manager.start())
+              .addPrefixPath("/", resource(new ClassPathResourceManager(WebSocketService.class.getClassLoader()))
+                  .addWelcomeFiles("index.html")))
+
+
           .build();
 
       server.start();
@@ -59,7 +68,7 @@ public class WebSocketService implements Service<WebSocketService> {
 
   @Override
   public void stop() {
-    if(server != null) {
+    if (server != null) {
       server.stop();
     }
   }

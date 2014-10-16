@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>GuiceUndertowWebSockets</title>
+</head>
+<body>
+<h1>Welcome!</h1>
+<span>Message: <div id="response"></div></span>
+<script type="text/javascript">
+    var container = document.getElementById('response');
+    var ws = new WebSocket('ws://localhost:8081/ws');
+    ws.onmessage = function(e) {
+        container.innerText = e.data;
+    }
+</script>
+</body>
+</html>

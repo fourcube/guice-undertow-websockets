@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 @ServerEndpoint("/")
@@ -18,12 +19,12 @@ class WebSocketEndpoint {
   }
 
   @OnOpen
-  public void connect(Session session) {
+  public void connect(Session session) throws IOException {
     String sessionId = session.getId();
     logger.info("New connection: " + sessionId);
     sessionHolder.put(session);
 
-    sessionHolder.send("Welcome " + sessionId + "!");
+    session.getBasicRemote().sendText("Welcome " + sessionId + "!");
   }
 
   @OnMessage
